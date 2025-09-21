@@ -1,0 +1,276 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fitness Tracker{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'fitness/style.css' %}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* 重置和基本樣式 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* 讓內容至少佔滿整個視窗高度 */
+            margin: 0;
+            font-family: Arial, sans-serif; /* 設置一個基礎字體 */
+            background-color: #f4f4f4; /* 頁面背景色 */
+        }
+
+        /* 頂部 Header 樣式 */
+        header {
+            background-color: #4CAF50; /* 圖片中的綠色橫條顏色 */
+            padding: 10px 0; /* 調整內邊距 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 頂部陰影 */
+            display: flex; /* 讓內容水平排列 */
+            justify-content: center; /* 內容水平居中 */
+            align-items: center; /* 內容垂直居中 */
+            min-height: 60px; /* 確保有足夠高度容納按鈕 */
+        }
+
+        /* 隱藏原本的 header nav ul，我們不再需要它 */
+        header nav ul {
+            display: none;
+        }
+
+        /* 主要內容區塊樣式 */
+        .container {
+            flex: 1; /* 讓內容區塊佔據可用空間，將 footer 推到底部 */
+            padding: 20px; /* 增加內容區塊內邊距 */
+            max-width: 1000px; /* 限制內容最大寬度 */
+            margin: 0 auto; /* 內容居中 */
+            background-color: #fff; /* 內容區塊背景色 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.05); /* 內容區塊陰影 */
+        }
+
+        /* 底部 Footer 樣式 */
+        footer {
+            background-color: #f8f8f8; /* 淺灰色背景 */
+            border-top: 1px solid #eee; /* 頂部邊框 */
+            padding: 10px 0; /* 調整內邊距 */
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 底部陰影 */
+            color: #777; /* 底部文字顏色 */
+            font-size: 0.8em;
+        }
+
+        /* 頂部導航按鈕的 Grid 佈局 */
+        .top-dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* 更小的按鈕尺寸 */
+            gap: 10px; /* 調整按鈕間距 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            max-width: 900px; /* 限制最大寬度 */
+            width: 100%; /* 佔滿 header 寬度 */
+            margin: 0 auto; /* 居中顯示 */
+            padding: 5px 0; /* 內部間距 */
+        }
+
+        .top-dashboard-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px; /* 稍微小一點的圓角 */
+            padding: 8px; /* 調整內邊距 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 更輕的陰影 */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.75em; /* 調整文字大小 */
+            min-height: 70px; /* 確保按鈕有最小高度 */
+        }
+
+        .top-dashboard-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Font Awesome 圖示的樣式 */
+        .top-dashboard-item i {
+            font-size: 30px; /* 控制圖示大小 */
+            margin-bottom: 5px; /* 圖示與文字間的間距 */
+            color: #333; /* 圖示顏色，可以修改 */
+        }
+
+        /* 內容區塊的通用樣式 */
+        h1, h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style: disc;
+            margin-left: 20px;
+            padding: 0;
+            color: #555;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+
+        /* 調整這裡讓「健身追蹤器」文字往下移 */
+        .footer-text {
+            margin-top: 30px; /* 從 15px 增加到 30px，可以根據需要調整 */
+            font-size: 0.8em;
+            color: #777;
+        }
+
+        /* Homepage Specific Styles (為了保持 home.html 簡潔，這些 CSS 放在 base.html 或獨立的 style.css 中) */
+        .homepage {
+            padding: 20px;
+            text-align: center; /* 讓標題和副標題居中 */
+        }
+
+        .homepage-title {
+            font-size: 2.5em; /* 更大的標題字體 */
+            color: #2c3e50; /* 深色文字 */
+            margin-bottom: 15px;
+            animation: fadeInDown 0.8s ease-out; /* 添加一個簡單的進入動畫 */
+        }
+
+        .homepage-subtitle {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 40px;
+            max-width: 700px; /* 限制副標題寬度 */
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out; /* 添加一個簡單的進入動畫 */
+        }
+
+        .features {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            text-align: left; /* 讓功能介紹的內容左對齊 */
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #34495e;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee; /* 添加一個底部邊框 */
+            padding-bottom: 10px;
+        }
+
+        .feature-list {
+            list-style: none; /* 移除預設的項目符號 */
+            padding: 0;
+        }
+
+        .feature-list li {
+            font-size: 1.1em;
+            color: #444;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            position: relative;
+            padding-left: 30px; /* 為自定義項目符號留出空間 */
+        }
+
+        /* 自定義項目符號 */
+        .feature-list li::before {
+            content: '\2713'; /* Unicode 的勾選符號 */
+            color: #4CAF50; /* 綠色勾選符號 */
+            font-weight: bold;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* 簡單的動畫效果 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="top-dashboard-grid">
+            {% if user.is_authenticated %}
+            <a href="{% url 'home' %}" class="top-dashboard-item">
+                <i class="fas fa-home"></i> {# Font Awesome 首頁圖示 #}
+                <span>首頁</span>
+            </a>
+            <a href="{% url 'activity_list' %}" class="top-dashboard-item">
+                <i class="fas fa-list-alt"></i> {# Font Awesome 活動列表圖示 #}
+                <span>活動列表</span>
+            </a>
+            <a href="{% url 'diet_log' %}" class="top-dashboard-item">
+                <i class="fas fa-utensils"></i> {# Font Awesome 飲食餐具圖示 #}
+                <span>飲食紀錄</span>
+            </a>
+            <a href="{% url 'weight_tracker' %}" class="top-dashboard-item">
+                <i class="fas fa-weight-scale"></i> {# Font Awesome 體重計圖示 #}
+                <span>體重追蹤</span>
+            </a>
+            <a href="{% url 'logout' %}" class="top-dashboard-item">
+                <i class="fas fa-sign-out-alt"></i> {# Font Awesome 登出圖示 #}
+                <span>登出</span>
+            </a>
+            {% else %}
+            <a href="{% url 'register' %}" class="top-dashboard-item">
+                <i class="fas fa-user-plus"></i> {# Font Awesome 註冊 (添加用戶) 圖示 #}
+                <span>註冊</span>
+            </a>
+            <a href="{% url 'login' %}" class="top-dashboard-item">
+                <i class="fas fa-sign-in-alt"></i> {# Font Awesome 登入圖示 #}
+                <span>登入</span>
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

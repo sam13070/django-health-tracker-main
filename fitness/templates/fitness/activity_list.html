@@ -1,0 +1,17 @@
+{% extends 'fitness/base.html' %}
+{% block content %}
+    <h1>活動清單</h1>
+    <ul>
+    {% for activity in activities %}
+        <li>
+            類型：{{ activity.get_activity_type_display }}，
+            時間：{{ activity.duration }}，
+            消耗熱量：{{ activity.calories_burned }} 卡，
+            日期：{{ activity.date_time|date:"Y年m月d日" }}
+        </li>
+    {% empty %}
+        <li>沒有活動紀錄</li>
+    {% endfor %}
+    </ul>
+    <a href="{% url 'add_activity' %}">新增活動</a>
+{% endblock %}

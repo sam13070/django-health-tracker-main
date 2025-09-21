@@ -1,0 +1,11 @@
+{% extends 'fitness/base.html' %}
+
+{% block content %}
+<h2>{{ user.username }}  個人資料</h2>
+<p>電子郵件: {{ user.email }}</p>
+<p>出生日期: {{ user_profile.date_of_birth }}</p>
+<p>身高: {{ user_profile.height }} cm</p>
+<p>體重: {{ user_profile.weight }} kg</p>
+<p>健身水平: {{ user_profile.fitness_level }}</p>
+<!-- Add more fields as needed -->
+{% endblock %}

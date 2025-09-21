@@ -1,0 +1,18 @@
+{% extends 'fitness/base.html' %} {# 確保這個模板繼承了你的 base.html #}
+
+{% block title %}首頁{% endblock %}
+
+{% block content %}
+<div class="homepage">
+    <h1 class="homepage-title">歡迎使用健康追蹤系統</h1>
+    <p class="homepage-subtitle">追蹤你的運動旅程、監控飲食，實現健康目標。</p>
+
+    <section class="features">
+        <h2 class="section-title">功能介紹</h2>
+        <ul class="feature-list">
+            <li><strong>活動追蹤：</strong>紀錄你的每日活動與運動。</li>
+            <li><strong>飲食紀錄：</strong>追蹤你的飲食與營養狀況。</li>
+            <li><strong>目標設定：</strong>設定並追蹤你的健身目標。</li>
+        </ul>
+    </section>
+{% endblock %}
